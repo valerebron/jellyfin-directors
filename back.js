@@ -9,7 +9,7 @@ async function requestHandler(req, res) {
       const data = await fetch(`https://jellyfin.erudi.fr/Persons?apikey=${process.env.API_KEY}&personTypes=Director`)
       const directors = await data.json()
       res.writeHead(200, { 'Content-Type': 'application/json' })
-      res.end({ DOMAIN_JELLYFIN: process.env.DOMAIN_JELLYFIN, directors: JSON.stringify(directors.Items) })
+      res.end(JSON.stringify({ directors: directors.Items, DOMAIN_JELLYFIN: process.env.DOMAIN_JELLYFIN }))
     })()
   }
   else if (url === '/') {
