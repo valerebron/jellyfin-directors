@@ -5,7 +5,7 @@ services:
     container_name: directors
     restart: unless-stopped
     ports:
-      - $PORT:$PORT_EXPOSED
+      - $PORT:$PORT
     environment:
       VIRTUAL_HOST: "${DOMAIN}"
       LETSENCRYPT_HOST: "${DOMAIN}"
