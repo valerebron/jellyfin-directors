@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" class="js-site-favicon" type="image/svg+xml" href="https://jellyfin.org/images/logo.svg">
+  <title>🎞 Directors</title>
+  <style>
+    body {
+      background-color: #202020;
+    }
+
+    header {
+      text-align: center;
+      margin: 20px;
+    }
+
+    ul {
+      list-style-type: none;
+      display: flex;
+      flex-wrap: wrap;
+      margin: 0;
+      padding: 0;
+      justify-content: center;
+    }
+
+    a {
+      padding: 10px;
+      color: white;
+      text-decoration: none;
+      text-align: center;
+      display: inline-block;
+      font-family: sans-serif;
+      line-height: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    li {
+      display: none;
+    }
+
+    li.show {
+      display: flex;
+    }
+
+    ul li a img {
+      margin-bottom: 10px;
+    }
+
+    a:hover {
+      background-color: rgb(78, 78, 78);
+    }
+
+    #directorSearch {
+      border-radius: 999px;
+      text-align: center;
+      padding: 8px;
+      font-weight: bold;
+      font-size: 22px;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const dataRAW = await fetch('/data')
+      const data = await dataRAW.json()
+      let html = ''
+      data.directors.map((director) => {
+        if (director.ImageTags.Primary) {
+          html += '<li class="director show"><a href="https://' + data.DOMAIN_JELLYFIN + '/web/index.html#!/details?id=' + director.Id + '"><img src="https://jellyfin.erudi.fr/Items/' + director.Id + '/Images/Primary?fillHeight=296&fillWidth=197&quality=96&tag=' + director.ImageTags.Primary + '">' + director.Name + '</a></li>'
+        }
+      })
+      const ul = document.createElement('ul')
+      ul.innerHTML = html
+      document.body.appendChild(ul)
+      // search
+      const search = document.getElementById('directorSearch')
+      const links = document.querySelectorAll('.director')
+      const filter = function () {
+        const textSearch = search.value.toLowerCase()
+        for (let i = 0; i < links.length; i++) {
+          if (links[i].innerText.toLowerCase().indexOf(textSearch) > -1) {
+            links[i].classList.add('show')
+          } else {
+            links[i].classList.remove('show')
+          }
+        }
+        // initFocus
+        if (document.querySelector('.focus')) {
+          document.querySelector('.focus').classList.remove('focus')
+        }
+        const linkShown = document.querySelectorAll('.link.show')
+        if (linkShown.length !== 0) {
+          linkShown[0].classList.add('focus')
+        }
+        if (search.value === '') {
+          document.body.classList.add('search-empty')
+        } else {
+          document.body.classList.remove('search-empty')
+        }
+      }
+
+      // FILTER
+      search.onkeyup = (e) => {
+        if (!['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(e.key)) {
+          filter()
+        }
+      }
+      document.onkeyup = (e) => {
+        if (e.key === 'Escape') {
+          search.value = ''
+          filter()
+        }
+      }
+    })
+  </script>
+</head>
+
+<body>
+  <header>
+    <input id="directorSearch" type="search" placeholder="search" autofocus>
+  </header>
+</body>
+
+</html>
